@@ -131,7 +131,25 @@ shinyApp(
       text-align: center;
       }"),
     
-    
+    tags$script('
+      $(document).ready(function () {
+        navigator.geolocation.getCurrentPosition(onSuccess, onError);
+              
+        function onError (err) {
+          Shiny.onInputChange("geolocation", false);
+        }
+              
+        function onSuccess (position) {
+          setTimeout(function () {
+            var coords = position.coords;
+            console.log(coords.latitude + ", " + coords.longitude);
+            Shiny.onInputChange("geolocation", true);
+            Shiny.onInputChange("userlat", coords.latitude);
+            Shiny.onInputChange("userlon", coords.longitude);
+          }, 1100)
+        }
+      });
+              '),
     
     div(class="outer", 
         
@@ -144,7 +162,13 @@ shinyApp(
     output$map <- renderLeaflet({
       leaflet() %>%
         addTiles() %>%
+        #addProviderTiles(providers$CartoDB.Positron) %>%
         setView(lng=almere$lon, lat=almere$lat, zoom=12)
+    })
+    
+    # Find geolocalisation coordinates when user clicks
+    observeEvent(input$geoloc, {
+      js$geoloc()
     })
     
     observe({
@@ -154,6 +178,16 @@ shinyApp(
                          layerId = ~id,
                    icon = playground_icon,
                    clusterOptions = markerClusterOptions())
+    })
+    
+    observe({
+      if(!is.null(input$userlat)){
+        map <- leafletProxy("map")
+        dist <- 0.5
+        lat <- input$userlat
+        lng <- input$userlon
+        map %>% fitBounds(lng - dist, lat - dist, lng + dist, lat + dist)
+      }
     })
     
     observe({
