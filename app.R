@@ -11,8 +11,8 @@ source("functions.R")
 almere <- list(lat=52.367546, lon=5.216377)
 
 # Read data.
-data <- jsonlite::fromJSON("data/playgrounds_almere.json")
-locations <- get_locations(data)
+playdata <- jsonlite::fromJSON("data/playgrounds_almere.json")
+locations <- get_locations(playdata)
 
 # Icon to plot playgrounds
 playground_icon <- makeIcon(
@@ -87,7 +87,7 @@ shinyApp(
         return()
       
       isolate({
-        show_playground_popup(event$id, event$lat, event$lng)
+        show_playground_popup(event$id, event$lat, event$lng, data=playdata)
       })
     })
     

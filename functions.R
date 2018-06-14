@@ -9,7 +9,7 @@ get_locations <- function(data){
 }
 
 
-show_playground_popup <- function(id, lat, lng){
+show_playground_popup <- function(id, lat, lng, data){
   
   play <- data[[id]]
   
@@ -24,7 +24,7 @@ show_playground_popup <- function(id, lat, lng){
                  </button> '),
     div(strong(play$name)),
     div("Tags:", paste(play$tags, collapse =", ")),
-    div("Nearest address:", play$nearest_address),
+    div(if(play$nearest_address == "")"" else "Nearest address:", play$nearest_address),
     br(),
     br(),
     div(mapply(make_img_div, 
