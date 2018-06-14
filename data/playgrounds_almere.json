@@ -1,0 +1,30 @@
+{
+   "p001" : {
+      "id" : "p001",
+      "name" : "test speeltuin 1",
+      "location" : {
+         "lat" : "52.38",
+         "lon" : "5.21"
+      },
+      "nearest_address" : "",
+      "pelirating" : "4",
+      "tags" : [ "zandbak", "glijbaan", "design" ],
+      "toilets" : "false",
+      "size" : "medium",
+      "images" : ["cale-weaver-221189-unsplash.jpg", "dallas-kwok-402163-unsplash.jpg"]
+   },
+   "p002" : {
+      "id" : "",
+      "name" : "test speeltuin 2",
+      "location" : {
+         "lat" : "52.385",
+         "lon" : "5.22"
+      },
+      "nearest_address" : "",
+      "pelirating" : "5",
+      "tags" : [ "zandbak", "klimtouw", "kabelbaan" ],
+      "toilets" : "true",
+      "size" : "small",
+      "images" : ["jace-grandinetti-110741-unsplash.jpg", "jack-young-260964-unsplash.jpg"]
+   }
+}
