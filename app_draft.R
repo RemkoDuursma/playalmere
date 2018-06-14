@@ -131,26 +131,6 @@ shinyApp(
       text-align: center;
       }"),
     
-    tags$script('
-      $(document).ready(function () {
-        navigator.geolocation.getCurrentPosition(onSuccess, onError);
-              
-        function onError (err) {
-          Shiny.onInputChange("geolocation", false);
-        }
-              
-        function onSuccess (position) {
-          setTimeout(function () {
-            var coords = position.coords;
-            console.log(coords.latitude + ", " + coords.longitude);
-            Shiny.onInputChange("geolocation", true);
-            Shiny.onInputChange("userlat", coords.latitude);
-            Shiny.onInputChange("userlon", coords.longitude);
-          }, 1100)
-        }
-      });
-              '),
-    
     div(class="outer", 
         
         leafletOutput("map", width="100%", height="100%")
@@ -163,12 +143,26 @@ shinyApp(
       leaflet() %>%
         addTiles() %>%
         #addProviderTiles(providers$CartoDB.Positron) %>%
-        setView(lng=almere$lon, lat=almere$lat, zoom=12)
-    })
-    
-    # Find geolocalisation coordinates when user clicks
-    observeEvent(input$geoloc, {
-      js$geoloc()
+        setView(lng=almere$lon, lat=almere$lat, zoom=12) %>%
+        addEasyButtonBar(
+          easyButton(
+          icon="fa-crosshairs", title="Locate Me",
+          onClick=JS("function(btn, map){ 
+                 map.locate({setView: true, maxZoom: 12})
+                     .on('locationfound', function(e){
+            var marker = L.marker([e.latitude, e.longitude]).bindPopup('You are here :)');
+            var circle = L.circle([e.latitude, e.longitude], e.accuracy/2, {
+                weight: 1,
+                color: '#ADD8E6',
+                fillColor: '#ADD8E6',
+                fillOpacity: 0.6
+            });
+            map.addLayer(marker);
+            map.addLayer(circle); }) 
+                     }")),
+          easyButton(icon="fa-home", title="Almere",
+                     onClick=JS("function(btn,map){map.setView([52.368, 5.216], 12);}"))
+        )
     })
     
     observe({
@@ -179,16 +173,16 @@ shinyApp(
                    icon = playground_icon,
                    clusterOptions = markerClusterOptions())
     })
-    
-    observe({
-      if(!is.null(input$userlat)){
-        map <- leafletProxy("map")
-        dist <- 0.5
-        lat <- input$userlat
-        lng <- input$userlon
-        map %>% fitBounds(lng - dist, lat - dist, lng + dist, lat + dist)
-      }
-    })
+    # 
+    # observe({
+    #   if(!is.null(input$userlat)){
+    #     map <- leafletProxy("map")
+    #     dist <- 0.5
+    #     lat <- input$userlat
+    #     lng <- input$userlon
+    #     map %>% fitBounds(lng - dist, lat - dist, lng + dist, lat + dist)
+    #   }
+    # })
     
     observe({
       event <- input$map_marker_click
