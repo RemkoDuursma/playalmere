@@ -23,6 +23,13 @@ return(locs)
 locations <- get_locations(data)
 
 
+playground_icon <- makeIcon(
+  iconUrl="icons/playground.png",
+  iconWidth=64, iconHeight=64,
+  iconAnchorX = 0, iconAnchorY = 64
+)
+
+
 show_playground_popup <- function(id, lat, lng){
   
   play <- data[[id]]
@@ -141,13 +148,12 @@ shinyApp(
     })
     
     observe({
-      pointcol <- input$color
-      
       leafletProxy("map", data=locations) %>%
         clearShapes %>%
-        addCircleMarkers(~lon, ~lat, color=pointcol, 
+        addMarkers(~lon, ~lat, 
                          layerId = ~id,
-                         stroke=FALSE, radius=5, fillOpacity=1)
+                   icon = playground_icon,
+                   clusterOptions = markerClusterOptions())
     })
     
     observe({
