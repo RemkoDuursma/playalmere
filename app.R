@@ -3,6 +3,7 @@ library(leaflet)
 library(shinyjs)
 library(jsonlite)
 library(dplyr)
+library(mapview)
 
 # - TO ADD LOGO: mapview::addLogo
 
