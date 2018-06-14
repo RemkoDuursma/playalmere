@@ -155,14 +155,19 @@ shinyApp(
                 weight: 1,
                 color: '#ADD8E6',
                 fillColor: '#ADD8E6',
-                fillOpacity: 0.6
+                fillOpacity: 0.65
             });
             map.addLayer(marker);
             map.addLayer(circle); }) 
                      }")),
           easyButton(icon="fa-home", title="Almere",
                      onClick=JS("function(btn,map){map.setView([52.368, 5.216], 12);}"))
-        )
+        ) %>%
+        addLogo("playalmere_logo.png",
+                position = "topright",
+                width = 200,
+                 height = 200,
+                offset.x=10, offset.y=10)
     })
     
     observe({
@@ -173,16 +178,6 @@ shinyApp(
                    icon = playground_icon,
                    clusterOptions = markerClusterOptions())
     })
-    # 
-    # observe({
-    #   if(!is.null(input$userlat)){
-    #     map <- leafletProxy("map")
-    #     dist <- 0.5
-    #     lat <- input$userlat
-    #     lng <- input$userlon
-    #     map %>% fitBounds(lng - dist, lat - dist, lng + dist, lat + dist)
-    #   }
-    # })
     
     observe({
       event <- input$map_marker_click
