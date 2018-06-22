@@ -3,6 +3,8 @@ library(leaflet)
 library(jsonlite)
 library(magrittr)
 library(mapview)
+library(config)
+library(mongolite)
 
 # Custom functions
 source("functions.R")
@@ -11,8 +13,27 @@ source("functions.R")
 almere <- list(lat=52.367546, lon=5.216377)
 
 # Read data.
-playdata <- jsonlite::fromJSON("data/playgrounds_almere.json")
-locations <- get_locations(playdata)
+# Must have config.yml in the working dir with password.
+cg <- config::get()
+
+# Open database connection (hosted on mlab.com)
+options(mongodb = list(
+  "host" = "ds113738.mlab.com:13738",
+  "username" = cg$username,
+  "password" = cg$password   
+))
+databaseName <- "playgrounds"
+
+om <- options()$mongodb
+db <- mongo(collection = "speeltuinen",
+            url = sprintf(
+              "mongodb://%s:%s@%s/%s",
+              om$username, om$password, om$host,
+              databaseName))
+
+#
+playdata <- db$find()
+playdata$id <- paste0("p", 1:nrow(playdata))
 
 # Icon to plot playgrounds
 playground_icon <- makeIcon(
@@ -71,9 +92,9 @@ shinyApp(
     # This is reactive but does not have to be if just plotting playgrounds statically.
     # However we can add a filter option later.
     observe({
-      leafletProxy("map", data=locations) %>%
+      leafletProxy("map", data=playdata) %>%
         clearShapes %>%
-        addMarkers(~lon, ~lat, 
+        addMarkers(~longitude, ~latitude, 
                    layerId = ~id,
                    icon = playground_icon,
                    clusterOptions = markerClusterOptions())

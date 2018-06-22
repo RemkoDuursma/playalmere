@@ -11,7 +11,7 @@ get_locations <- function(data){
 
 show_playground_popup <- function(id, lat, lng, data){
   
-  play <- data[[id]]
+  play <- data[data$id == id,]
   
   showModal(modalDialog(
     inputId = 'Dialog1',
@@ -23,13 +23,19 @@ show_playground_popup <- function(id, lat, lng, data){
                  <span style="color:black; "><font size="5">&times;</font> <span>
                  </button> '),
     div(strong(play$name)),
-    div("Tags:", paste(play$tags, collapse =", ")),
-    div(if(play$nearest_address == "")"" else "Nearest address:", play$nearest_address),
+    div(play$description),
+    div("Spelen:", play$tagsplay),
+    div("Voorzieningen:", play$tagsother),
     br(),
     br(),
-    div(mapply(make_img_div, 
+    div(if(play$images == ""){
+        "" 
+      } else {
+        mapply(make_img_div, 
                img=file.path("images", play$images),
-               SIMPLIFY=FALSE), id="div_images", class="photolist")
+               SIMPLIFY=FALSE)
+      }, id="div_images", class="photolist"),
+    div(play$footnote)
     
     ))
 }
