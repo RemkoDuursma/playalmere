@@ -1,39 +1,14 @@
-library(shiny)
-library(leaflet)
-library(jsonlite)
-library(magrittr)
-library(mapview)
-library(config)
-library(mongolite)
-
-# Custom functions
-source("functions.R")
+source("load_packages.R")
 
 # Center of map on open, and on clicking Home button.
 almere <- list(lat=52.367546, lon=5.216377)
 
-# Read data.
-# Must have config.yml in the working dir with password.
-cg <- config::get()
+# Read data
+playdata <- read_playdata()
 
-# Open database connection (hosted on mlab.com)
-options(mongodb = list(
-  "host" = "ds113738.mlab.com:13738",
-  "username" = cg$username,
-  "password" = cg$password   
-))
-databaseName <- "playgrounds"
-
-om <- options()$mongodb
-db <- mongo(collection = "speeltuinen",
-            url = sprintf(
-              "mongodb://%s:%s@%s/%s",
-              om$username, om$password, om$host,
-              databaseName))
-
-#
-playdata <- db$find()
-playdata$id <- paste0("p", 1:nrow(playdata))
+# Read image locations. Re-run script "assign_images" when new images added.
+images_loc <- readRDS("data/images_loc.rds")
+playdata <- assign_images(playdata, images_loc)
 
 # Icon to plot playgrounds
 playground_icon <- makeIcon(
@@ -97,19 +72,19 @@ shinyApp(
         addMarkers(~longitude, ~latitude, 
                    layerId = ~id,
                    icon = playground_icon,
-                   clusterOptions = markerClusterOptions())
+                   clusterOptions = markerClusterOptions(showCoverageOnHover = FALSE))
     })
     
     # Event when clicking on a marker
     observe({
       event <- input$map_marker_click
       
-      if (is.null(event))
+      if (is.null(event)){
         return()
-      
-      isolate({
+      } else { 
         show_playground_popup(event$id, event$lat, event$lng, data=playdata)
-      })
+      }
+      
     })
     
   }
