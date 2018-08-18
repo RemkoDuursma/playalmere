@@ -39,11 +39,13 @@ code_gohome <- sprintf("function(btn,map){map.setView([%s, %s], 12);}", almere$l
 
 shinyApp(
   ui <- fluidPage(theme="bootstrap_flatly_custom.css",
-    
-    div(class="outer", 
-        leafletOutput("map", width="100%", height="100%")
-    )
-  ),
+        img(src="playalmere_logo.png", width=150, height= 50),
+        h4(em(sprintf("Vind een van %s speeltuinen in Almere!", nrow(playdata)))),
+        tags$style(type = "text/css", "#map {height: calc(100vh - 160px) !important;}"),
+        withSpinner(leafletOutput("map"), type = 8),
+        p("Samengesteld door Peli, Remko en Daisy, geproduceerd door", 
+          a("www.remkoduursma.com", href="https://www.remkoduursma.com"))
+        ),
   
   server <- function(input, output){
     
@@ -55,13 +57,14 @@ shinyApp(
           easyButton(
           icon="fa-crosshairs", title="Locate Me", onClick=JS(code_locate)),
           easyButton(icon="fa-home", title="Almere", onClick=JS(code_gohome))
-        ) %>%
-        addLogo("playalmere_logo.png",
-                position = "topright",
-                width = 200,
-                height = 200,
-                offset.x=10, 
-                offset.y=10)
+        ) 
+      # %>%
+      #   addLogo("playalmere_logo.png",
+      #           position = "topright",
+      #           width = 200,
+      #           height = 200,
+      #           offset.x=10, 
+      #           offset.y=10)
     })
     
     # This is reactive but does not have to be if just plotting playgrounds statically.
