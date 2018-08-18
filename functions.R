@@ -8,6 +8,25 @@ get_locations <- function(data){
   return(locs)
 }
 
+# Hmisc
+capitalize <- function (string) {
+  capped <- grep("^[A-Z]", string, invert = TRUE)
+  substr(string[capped], 1, 1) <- toupper(substr(string[capped], 
+                                                 1, 1))
+  return(string)
+}
+
+format_tagsplay <- function(x){
+  
+  gsub(";", ", ", x) %>% 
+    capitalize
+  
+}
+
+str_in <- function(x, y, ...){
+  any(grepl(x,y), ...)
+}
+
 
 show_playground_popup <- function(id, lat, lng, data){
   
@@ -17,15 +36,20 @@ show_playground_popup <- function(id, lat, lng, data){
     inputId = 'Dialog1',
     easyClose = TRUE,    
     footer = NULL,
-    title = HTML('<span class="modaltitle">Info
+    title = HTML('<span class="modaltitle">PlayAlmere
                  <span>
                  <button type = "button" class="close" data-dismiss="modal" ">
                  <span style="color:black; "><font size="5">&times;</font> <span>
                  </button> '),
     div(strong(play$name)),
-    div(play$description),
-    div("Spelen:", play$tagsplay),
-    div("Voorzieningen:", play$tagsother),
+    #div(play$description),
+    div(format_tagsplay(play$tagsplay)),
+    div(if(str_in("school",play$tagsother)){
+      em("Deze speeltuin is alleen buiten schooltijd toegangkelijk.")
+    } else ""),
+    div(if(str_in("betaald", play$tagsother)){
+      em("Let op: deze speeltuin is niet gratis!")
+    } else ""),
     br(),
     br(),
     div(if(play$images == ""){
@@ -43,9 +67,7 @@ show_playground_popup <- function(id, lat, lng, data){
 make_img_div <- function(img, description=""){
   
     tags$div(class="gallery", 
-             tags$a(href=img, #target="_blank",
-                    tags$img(src=img, width="300", height="200") 
-             ),
+             tags$img(src=img, width="300", height="200"),
              tags$div(description, class="desc")
     )
 }

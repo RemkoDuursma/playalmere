@@ -2,3 +2,4 @@
 *.Rproj.user/
 .Rproj.user
 config.yml
+rsconnect/
